@@ -5,7 +5,3 @@ class Item(BaseModel):
     item_name: str
     unit_price: int
     special_price: Optional[dict] = None
-
-class CartItem(BaseModel):
-    item_name: str
-    quantity: int

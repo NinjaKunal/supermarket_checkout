@@ -10,10 +10,11 @@ items_db = {}
 def fetch_all_items():
     return items_db
 
-@supermarket_router.post("/")
+@supermarket_router.post("/add-item")
 def add_item(item: Item):
+    item.item_name = item.item_name.upper()
     if not validate_item_code(item.item_name):
-      raise HTTPException(status_code=400, detail="Invalid item code. Use a single uppercase letter.")
+      raise HTTPException(status_code=400, detail="Invalid item code. Use a single letter.")
     if item.item_name in items_db:
       raise HTTPException(status_code=400, detail="Item already exists.")
     items_db[item.item_name] = item.dict()
@@ -21,15 +22,17 @@ def add_item(item: Item):
 
 @supermarket_router.delete("/{item_name}")
 def delete_item(item_name: str):
+    item_name = item_name.upper()
     if not validate_item_code(item_name):
-      raise HTTPException(status_code=400, detail="Invalid item code. Use a single uppercase letter.")
+      raise HTTPException(status_code=400, detail="Invalid item code. Use a single letter.")
     if item_name not in items_db:
       raise HTTPException(status_code=404, detail="Item not found.")
     del items_db[item_name]
     return {"message": f"Item {item_name} deleted."}
 
-@supermarket_router.get("/{item_name}/price-rule")
+@supermarket_router.get("/{item_name}/pricing")
 def get_price_rule(item_name: str):
+    item_name = item_name.upper()
     if not validate_item_code(item_name):
-      raise HTTPException(status_code=400, detail="Invalid item code. Use a single uppercase letter.")
+      raise HTTPException(status_code=400, detail="Invalid item code. Use a single letter.")
     return items_db.get(item_name, {"error": "Item not found."})
